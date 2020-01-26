@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Higher Order Component</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+  <smart-avatar username="vincent"></smart-avatar>
+</div>
+<script>
+  // mock API
+  function fetchURL (username, cb) {
+    console.log(this)
+    setTimeout(() => {
+      cb('https://www.baidu.com/img/baidu_resultlogo@2.png')
+    }, 500)
+  }
+
+  const Avatar = {
+    props: ['src'],
+    template: `<img :src="src">`
+  }
+
+  function withAvataURL (InnerComponent) {
+    const SmartAvatar = {
+      props: ['username'],
+      components: { InnerComponent },
+      data () {
+        return {
+          url: 'http://img1.imgtn.bdimg.com/it/u=4238142487,3274484296&fm=26&gp=0.jpg'
+        }
+      },
+      created () {
+        fetchURL(this.username, url => {
+          this.url = url
+          console.log(this)
+        })
+      },
+      template: `<div><inner-component :src="url"></inner-component><button @click="showThis">这是哪里</button></div>`,
+      methods: {
+        showThis: () => {
+          console.log(this)
+        }
+      }
+    }
+    return SmartAvatar
+  }
+
+  const SmartAvatar = withAvataURL(Avatar)
+
+  new Vue({
+    el: '#app',
+    components: { SmartAvatar }
+  })
+</script>
+</body>
+</html>

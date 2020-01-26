@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamic Render Components</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+  <button @click="ok = !ok">toggle</button>
+  <example :ok="ok"></example>
+</div>
+<script>
+  const Foo = {
+    render (h) {
+      return h('div', 'Foo')
+    }
+  }
+
+  const Bar = {
+    render (h) {
+      return h('div', 'Bar')
+    }
+  }
+
+  Vue.component('example', {
+    props: ['ok'],
+    render (h) {
+      return this.ok ? h(Foo) : h(Bar)
+    }
+  })
+
+  new Vue({
+    el: '#app ',
+    data () {
+      return {
+        ok: true
+      }
+    }
+  })
+</script>
+</body>
+</html>

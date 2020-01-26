@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Where is this?</title>
+</head>
+<script>
+  /*
+  * 有个错误的观念是：this远指向window；后来发现并不总是这样，下面的情况中this指向了外层对象
+  * */
+  function execCallback(callback) {
+    callback()
+  }
+  function stubFunction() {
+    return obj = {
+      created() {
+        execCallback(() => {
+          console.log(this)
+        })
+      }
+    }
+  }
+
+  stubFunction().created()
+  /**
+   * 经过试验，箭头函数的this指向执行他的地方的this，
+   * 如上例，this指向created()方法中的context，即obj
+   * 如果将created的以箭头函数的方式定义，那么this最终指向的就是window了
+   */
+
+  /**
+   * 找了个
+   */
+</script>
+<body>
+  <h3 style="color: red; font-weight: bold;">
+     箭头函数的this是在定义函数时绑定的，不是在执行过程中绑定的。简单的说，函数在定义时，this就继承了定义函数的对象。
+  </h3>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Writing Plugins</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <script>
+    const myPlugin = {
+      install (Vue) {
+        Vue.mixin({
+          created () {
+            if (this.$options.rules) {
+              Object.keys(this.$options.rules).forEach(key => {
+                const { validate, message } = this.$options.rules[key]
+                this.$watch(key, (newValue) => {
+                  if (validate(newValue)) {
+                    console.log(message)
+                  }
+                })
+              })
+            }
+          },
+          data() {
+            return { name: 'lwz' }
+          }
+        })
+      }
+    }
+
+    Vue.use(myPlugin)
+
+    const vm = new Vue({
+      data: { foo: 10 },
+      rules: {
+        foo: {
+          validate: value => value > 1,
+          message: 'foo must be greater than one'
+        }
+      }
+    })
+
+  </script>
+</head>
+<body>
+
+</body>
+</html>
