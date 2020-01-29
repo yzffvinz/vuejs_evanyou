@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple i18n Plugin</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+  <div>{{ $t('welcome-message') }}</div>
+  <button @click="lang = 'en'">英文</button>
+  <button @click="lang = 'cn'">中文</button>
+  <button @click="lang = 'nl'">Dutch</button>
+</div>
+<script>
+  const i18nPlugin = {
+    install (Vue, locales) {
+      Vue.prototype.$t = function (key) {
+        return locales[this.$root.lang][key]
+      }
+    }
+  }
+
+  Vue.use(i18nPlugin, {
+    'en': { 'welcome-message': 'Hello' },
+    'cn': { 'welcome-message': '你好' },
+    'nl': { 'welcome-message': 'Hallo' }
+  })
+
+  const vm = new Vue({
+    el: '#app',
+    data () {
+      return {
+        lang: 'en'
+      }
+    }
+  })
+</script>
+</body>
+</html>

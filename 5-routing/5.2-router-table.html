@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Router Table</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+  window.addEventListener('hashchange', () => {
+    vm.hash = window.location.hash.slice(1)
+  })
+
+  const routerMap = {
+    'foo': { render: (h) => h('div', 'foo') },
+    'bar': { render: (h) => h('div', 'bar') }
+  }
+  const NotFound = { render: (h) => h('div', 'NotFound') }
+
+  const vm = new Vue({
+    el: '#app',
+    data () {
+      return {
+        hash: window.location.hash.slice(1)
+      }
+    },
+    render (h) {
+      return h('div', [
+        h(routerMap[this.hash] || NotFound),
+        h('a', { attrs: { href: '#foo' } }, 'foo'),
+        ' | ',
+        h('a', { attrs: { href: '#bar' } }, 'bar')
+      ])
+    }
+  })
+</script>
+</body>
+</html>

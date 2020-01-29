@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shared Object</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+  <counter></counter>
+  <counter></counter>
+  <counter></counter>
+  <button @click="increase">increment</button>
+</div>
+<script>
+  const state = {
+    count: 0
+  }
+  const Counter = {
+    data() {
+      return {
+        state
+      }
+    },
+    render (h) {
+      return h('div', this.state.count)
+    }
+  }
+  new Vue({
+    el: '#app',
+    components: { Counter },
+    methods: {
+      increase () {
+        state.count++
+      }
+    }
+  })
+
+</script>
+</body>
+</html>

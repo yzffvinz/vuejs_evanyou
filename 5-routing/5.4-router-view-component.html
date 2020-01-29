@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Router View Component</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="path-to-regexp.js"></script>
+</head>
+<body>
+<div id="app">
+  <h1>Welcome here!</h1>
+  <a href="#foo/lwz/123">foo123</a>
+  <a href="#foo/lwz/456">foo456</a>
+  <a href="#bar">bar</a>
+  <router-link to="bar">bar2</router-link>
+  <router-view :hash="hashValue"></router-view>
+</div>
+<script>
+  const Foo = {
+    props: ['id', 'name'],
+    template: `<div>foo with id: {{ id }}, name: {{ name }}</div>`
+  }
+
+  const Bar = { template: `<div>Bar</div>` }
+
+  const NotFound = { template: `<div>not found!</div>` }
+
+  const routerTable = {
+    'foo/:id/:name': Foo,
+    'bar': Bar
+  }
+
+  const VueRouter = {
+    install (Vue) {
+      const compliedRoutes = []
+      Object.keys(routerTable).forEach(path => {
+        const dynamicKeys = []
+        const component = routerTable[path]
+        const reg = pathToRegexp(path, dynamicKeys)
+        compliedRoutes.push({ component, reg, dynamicKeys })
+      })
+
+      Vue.mixin({
+        components: {
+          RouterView: {
+            props: ['hash'],
+            render (h) {
+              let componentToRender = NotFound
+              let props = {}
+              compliedRoutes.some(({ component, reg, dynamicKeys }) => {
+                const match = reg.exec(this.hash)
+                if (match) {
+                  componentToRender = component
+                  dynamicKeys.forEach((key, index) => {
+                    props[key.name] = match[index + 1]
+                  })
+                  return true
+                }
+              })
+              return h(componentToRender || NotFound, { props })
+            }
+          },
+          RouterLink: {
+            props: ['to'],
+            computed: {
+              href() {
+                return `#${this.to}`
+              }
+            },
+            template: `<a :href="href"><slot></slot></a>`
+          }
+        },
+        data () {
+          return {
+            hashValue: window.location.hash.slice(1)
+          }
+        },
+        created () {
+          window.addEventListener('hashchange', () => {
+            this.hashValue = window.location.hash.slice(1)
+          })
+        }
+      })
+    }
+  }
+
+  Vue.use(VueRouter)
+
+  const vm = new Vue({
+    el: '#app'
+  })
+</script>
+</body>
+</html>

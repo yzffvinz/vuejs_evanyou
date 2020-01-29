@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Path to Regexp</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="path-to-regexp.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+  const Foo = {
+    props: ['id', 'name'],
+    template: `<div>foo with id: {{ id }}, name: {{ name }}</div>`
+  }
+
+  const Bar = { template: `<div>Bar</div>` }
+  const NotFound = { template: `<div>not found!</div>` }
+
+  window.addEventListener('hashchange', () => {
+    app.hash = window.location.hash.slice(1)
+  })
+
+  const routerTable = {
+    'foo/:id/:name': Foo,
+    'bar': Bar
+  }
+
+  const compliedRoutes = []
+
+  Object.keys(routerTable).forEach(path => {
+    const dynamicKeys = []
+    const component = routerTable[path]
+    const reg = pathToRegexp(path, dynamicKeys)
+    compliedRoutes.push({ component, reg, dynamicKeys })
+  })
+
+  const app = new Vue({
+    el: '#app',
+    data () {
+      return {
+        hash: window.location.hash.slice(1)
+      }
+    },
+    render (h) {
+      let componentToRender = NotFound
+      let props = {}
+
+      compliedRoutes.some(({ component, reg, dynamicKeys }) => {
+        const match = reg.exec(this.hash)
+        if (match) {
+          componentToRender = component
+          dynamicKeys.forEach((key, index) => {
+            props[key.name] = match[index + 1]
+          })
+          return true
+        }
+      })
+
+      return h('div', [
+        h(componentToRender || NotFound, { props }),
+        h('a', { attrs: { href: '#foo/123/lwz' } }, 'foo'),
+        ' | ',
+        h('a', { attrs: { href: '#foo/234/lq' } }, 'foo'),
+        ' | ',
+        h('a', { attrs: { href: '#bar' } }, 'bar')
+      ])
+    }
+  })
+
+</script>
+
+</body>
+</html>

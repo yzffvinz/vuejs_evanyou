@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Model-based Validation</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+  <form @submit="submit">
+    <input v-model="text"/>
+    <input v-model="email"/>
+    <input type="submit" title="提交" :disabled="!$v.valid">
+    <ul style="color: red;">
+      <li v-for="error in $v.errors">
+        {{ error }}
+      </li>
+    </ul>
+  </form>
+</div>
+<script>
+  const myValidation = {
+    install (Vue) {
+      Vue.mixin({
+        computed: {
+          $v () {
+            let valid = true
+            let errors = []
+            const rules = this.$options.validations
+            if (rules) {
+              Object.keys(rules).forEach(key => {
+                const rule = rules[key]
+                if (!rule.validation(this[key])) {
+                  valid = false
+                  errors.push(rule.message(key, this[key]))
+                }
+              })
+            }
+            return {
+              valid,
+              errors
+            }
+          }
+        }
+      })
+    }
+  }
+
+  Vue.use(myValidation)
+
+  const vm = new Vue({
+    el: '#app',
+    data () {
+      return {
+        text: '',
+        email: ''
+      }
+    },
+    validations: {
+      text: {
+        validation: value => value.length >= 5,
+        message: (key, value) => `${key}'s length must longger than 5, but got ${value.length}`
+      },
+      email: {
+        validation: value => value.includes('@'),
+        message: () => `not a valid email`
+      }
+    },
+    methods: {
+      submit (e) {
+        if (!this.$v.valid) {
+          e.preventDefault()
+          alert('not valid')
+        }
+      }
+    }
+  })
+</script>
+</body>
+</html>

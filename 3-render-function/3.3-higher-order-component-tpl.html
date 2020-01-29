@@ -26,6 +26,7 @@
   function withAvataURL (InnerComponent) {
     const SmartAvatar = {
       props: ['username'],
+      components: { InnerComponent },
       data () {
         return {
           url: 'http://img1.imgtn.bdimg.com/it/u=4238142487,3274484296&fm=26&gp=0.jpg'
@@ -34,15 +35,14 @@
       created () {
         fetchURL(this.username, url => {
           this.url = url
+          console.log(this)
         })
       },
-      render (h) {
-        console.log(this)
-        return h(InnerComponent, {
-          props: {
-            src: this.url
-          }
-        })
+      template: `<div><inner-component :src="url"></inner-component><button @click="showThis">这是哪里</button></div>`,
+      methods: {
+        showThis: () => {
+          console.log(this)
+        }
       }
     }
     return SmartAvatar

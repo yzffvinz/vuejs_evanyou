@@ -1,0 +1,11 @@
+## plugin
+vue-i18n
+
+## ways
+- 创建一个$t函数，在render时，从locales字典中选择相应的语言进行render
+- with directives: 
+```<tag v-i18n='hello-message></tag>```
+不用走vue diff的过程，更加effective
+不能满足所有情况，有些时候还是需要使用$t function
+- vue-loader: analyze template, make it static.Then complie serveral versions,
+ 

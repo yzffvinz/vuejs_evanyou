@@ -1,0 +1,3 @@
+- Vue.use
+- Vue.extend
+- Vue.extends
