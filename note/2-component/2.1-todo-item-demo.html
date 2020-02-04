@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
 <head>
   <meta charset="UTF-8">
   <title>Todo Item</title>
@@ -7,7 +7,16 @@
 </head>
 <body>
 <div id="app">
-  <todo-list ref="todoList"></todo-list>
+  <todo-list ref="todoList">
+    <todo-item v-for="item in todos" :title="item.title" :del="item.del" @delete="delItem">
+      <span slot="pre">Pre</span>
+      <template v-slot:new-pre="{ random, text }">
+        New Pre: {{ random }}-{{ text }}
+      </template>
+      <template #new-suf>New Suf</template>
+      <span slot="suf">Suf</span>
+    </todo-item>
+  </todo-list>
 </div>
 <script>
   Vue.component('todo-item', {
@@ -18,21 +27,40 @@
         default: false
       }
     },
+    data () {
+      return {
+        val: Math.random(),
+        text: 'text'
+      }
+    },
     methods: {
-      handleClick() {
+      handleClick () {
         this.$emit('delete', this.title)
       }
     },
     template: `
       <li style="display: table-row">
+        <slot name="pre"></slot>
+        <slot name="new-pre" :random="val" :text="text"></slot>
         <span style="display: table-cell" v-if="!del" @click.stop="handleClick">{{ title }}</span>
         <span v-else style="text-decoration: line-through">{{ title }}</span>
         <button style="display: table-cell" v-show="!del" @click="handleClick">删除</button>
+        <slot name="new-suf"></slot>
+        <slot name="suf"></slot>
       </li>
     `
   })
 
   Vue.component('todo-list', {
+    template: `
+      <ul>
+        <slot name="default"></slot>
+      </ul>
+    `
+  })
+
+  const vm = new Vue({
+    el: '#app',
     data () {
       return {
         todos: [
@@ -44,21 +72,12 @@
       }
     },
     methods: {
-      delItem(title) {
+      delItem (title) {
         this.todos.some(item => {
           if (item.title === title) return item.del = true
         })
       }
-    },
-    template: `
-      <ol>
-        <todo-item v-for="item in todos" :title="item.title" :del="item.del" @delete="delItem"></todo-item>
-      </ol>
-    `
-  })
-
-  const vm = new Vue({
-    el: '#app'
+    }
   })
 </script>
 
