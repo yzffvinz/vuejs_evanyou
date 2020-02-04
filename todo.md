@@ -1,5 +1,5 @@
 👀 TODO
-- 自定义组件实现v-model、sync是什么
+- 父组件如何使用v-model绑定到子组件的model值（可实现一个input-with-label）、.sync是什么
 - 异步组件、动态组件（componen :is）、keep-alive组件、处理便捷情况
 -  
 

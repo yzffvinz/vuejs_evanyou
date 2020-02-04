@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Functional Component</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+  <temp-var :name="`Hi ${name}`" :age="`Age: ${age}`">
+    <template #default="{ name, age }">
+      {{ name }}-{{ age }}
+    </template>
+  </temp-var>
+</div>
+<script>
+  const TempVar = {
+    functional: true,
+    render: (h, ctx) => {
+      return ctx.scopedSlots && ctx.scopedSlots.default(ctx.props || {})
+    }
+  }
+
+  const vm = new Vue({
+    el: '#app',
+    components: { TempVar },
+    data () {
+      return {
+        name: 'VincentLiu',
+        age: 25
+      }
+    }
+  })
+
+</script>
+</body>
+</html>
