@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Todo Item</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+  <todo-list ref="todoList"></todo-list>
+</div>
+<script>
+  Vue.component('todo-item', {
+    props: {
+      title: String,
+      del: {
+        type: Boolean,
+        default: false
+      }
+    },
+
+    template: `
+      <li>
+        <span v-if="!del">{{ title }}</span>
+        <span v-else style="text-decoration: line-through">{{ title }}</span>
+        <button v-show="!del">删除</button>
+      </li>
+    `
+  })
+
+  Vue.component('todo-list', {
+    data () {
+      return {
+        todos: [
+          { title: 'vue实战课程——evan-you目录下', del: false },
+          { title: 'Bis301报表：页面展示、参数校验、请求代码编写', del: false },
+          { title: 'html：通读html部分，查缺补漏。各种线介绍，flex回顾', del: false },
+          { title: 'vue实战课程', del: false }
+        ]
+      }
+    },
+    template: `
+      <ol>
+        <todo-item v-for="item in todos" :title="item.title" :del="item.del"></todo-item>
+      </ol>
+    `
+  })
+
+  const vm = new Vue({
+    el: '#app'
+  })
+</script>
+
+</body>
+</html>
