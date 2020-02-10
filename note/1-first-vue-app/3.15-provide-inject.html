@@ -17,9 +17,9 @@
 </head>
 <body>
 <div id="app">
-  <component-e></component-e>
   <component-a>
-    <component-b></component-b>
+    <component-b>
+    </component-b>
     <component-c>
       <component-e></component-e>
       <component-f></component-f>
@@ -34,17 +34,30 @@
 
 <script>
   const ComponentA = {
-    inject: {
-      theme: {
-        default: () => ({})
+    provide () {
+      return {
+        theme: this.theme
+      }
+    },
+    data () {
+      return {
+        theme: {
+          color: 'green'
+        }
       }
     },
     template: `
       <div>
         <h1 :style="{ color: theme.color }">A</h1>
+        <button @click="changeColor">A变色</button>
         <slot></slot>
       </div>
-    `
+    `,
+    methods: {
+      changeColor (color) {
+        this.theme.color = this.theme.color === 'red' ? 'green' : 'red'
+      }
+    }
   }
 
   const ComponentB = {
@@ -54,7 +67,10 @@
         <h2 :style="{ color: theme.color }">B</h2>
         <slot></slot>
       </div>
-    `
+    `,
+    created () {
+      console.log(this)
+    }
   }
 
   const ComponentC = {
@@ -72,16 +88,22 @@
     template: `
       <div>
         <h2 :style="{ color: theme.color }">D</h2>
+        <button @click="changeColor">changeColorD</button>
         <slot></slot>
       </div>
-    `
+    `,
+    methods: {
+      changeColor () {
+        this.theme.color = this.theme.color === 'red' ? 'green' : 'red'
+      }
+    }
   }
 
   function tplElement (level, innerHTML) {
     return {
       inject: ['theme'],
       render (h) {
-        h(`h${ level }`, { style: { color: this.theme.color } }, innerHTML)
+        return h(`h${level}`, { style: { color: this.theme.color } }, innerHTML)
       }
     }
   }
@@ -104,18 +126,6 @@
       ComponentG: tplElement(3, 'G'),
       ComponentH: tplElement(3, 'H'),
       ComponentI: tplElement(3, 'I')
-    },
-    data () {
-      return {
-        theme: {
-          color: 'red'
-        }
-      }
-    },
-    methods: {
-      changeColor(color) {
-        this.theme.color = color
-      }
     }
   })
 
