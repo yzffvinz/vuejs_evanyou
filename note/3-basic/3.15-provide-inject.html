@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Provide & Inject</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    * {
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <component-e></component-e>
+  <component-a>
+    <component-b></component-b>
+    <component-c>
+      <component-e></component-e>
+      <component-f></component-f>
+    </component-c>
+    <component-d>
+      <component-g></component-g>
+      <component-h></component-h>
+      <component-i></component-i>
+    </component-d>
+  </component-a>
+</div>
+
+<script>
+  const ComponentA = {
+    inject: {
+      theme: {
+        default: () => ({})
+      }
+    },
+    template: `
+      <div>
+        <h1 :style="{ color: theme.color }">A</h1>
+        <slot></slot>
+      </div>
+    `
+  }
+
+  const ComponentB = {
+    inject: ['theme'],
+    template: `
+      <div>
+        <h2 :style="{ color: theme.color }">B</h2>
+        <slot></slot>
+      </div>
+    `
+  }
+
+  const ComponentC = {
+    inject: ['theme'],
+    template: `
+      <div>
+        <h2 :style="{ color: theme.color }">C</h2>
+        <slot></slot>
+      </div>
+    `
+  }
+
+  const ComponentD = {
+    inject: ['theme'],
+    template: `
+      <div>
+        <h2 :style="{ color: theme.color }">D</h2>
+        <slot></slot>
+      </div>
+    `
+  }
+
+  function tplElement (level, innerHTML) {
+    return {
+      inject: ['theme'],
+      render (h) {
+        h(`h${ level }`, { style: { color: this.theme.color } }, innerHTML)
+      }
+    }
+  }
+
+
+  const vm = new Vue({
+    el: '#app',
+    provide () {
+      return {
+        theme: this.theme
+      }
+    },
+    components: {
+      ComponentA,
+      ComponentB,
+      ComponentC,
+      ComponentD,
+      ComponentE: tplElement(3, 'E'),
+      ComponentF: tplElement(3, 'F'),
+      ComponentG: tplElement(3, 'G'),
+      ComponentH: tplElement(3, 'H'),
+      ComponentI: tplElement(3, 'I')
+    },
+    data () {
+      return {
+        theme: {
+          color: 'red'
+        }
+      }
+    },
+    methods: {
+      changeColor(color) {
+        this.theme.color = color
+      }
+    }
+  })
+
+</script>
+</body>
+</html>

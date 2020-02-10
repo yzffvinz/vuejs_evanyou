@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Custom Directive</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+  <button @click="show = !show">销毁</button>
+  <button v-if="show" v-append-text="`hello ${number}`" @click="number++">
+    按钮
+  </button>
+</div>
+<!--<button onClick="forceUpdate()">强制刷新</button>-->
+<script>
+  Vue.directive('append-text', {
+    bind (el) {
+      console.log('bind')
+    },
+    inserted (el, binding) {
+      el.appendChild(document.createTextNode(binding.value))
+    },
+    update (...args) {
+      console.log(args)
+      console.log('update')
+    },
+    componentUpdated (el, binding) {
+      el.removeChild(el.childNodes[el.childNodes.length - 1])
+      el.appendChild(document.createTextNode(binding.value))
+    },
+    unbind (...args) {
+      console.log(args)
+      console.log('unbind')
+    }
+  })
+
+  const vm = new Vue({
+    el: '#app',
+    data () {
+      return {
+        number: 0,
+        show: true
+      }
+    },
+  })
+</script>
+</body>
+</html>
