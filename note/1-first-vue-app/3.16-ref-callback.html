@@ -2,16 +2,150 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>3.16</title>
+  <title>Elegant Ref</title>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    * {
+      margin: 0px auto;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    div {
+      padding: 20px;
+    }
+
+    h1, h3, h6 {
+      padding: 15px;
+    }
+
+    div {
+      border: 1px solid lightgray;
+    }
+  </style>
 </head>
 <body>
-
+<div id="app" style="text-align: center">
+  <component-top ref="top"></component-top>
+</div>
 <script>
-  function createElement (hLevel, innerText) {
-
+  const ComponentBot11 = {
+    inject: ['topGetMap'],
+    template: `
+      <div>
+        <h6>Bot1 1</h6>
+        <button @click="topGetMap">bot11 读取 topGetMap</button>
+        <h6>使用vue provide/inject 传递了Top组件中的方法</h6>
+        <slot></slot>
+      </div>
+    `
   }
-</script>
 
+  const ComponentBot21 = {
+    inject: ['setChildrenRef', 'getChildrenRef', 'getRef'],
+    template: `
+      <div>
+        <h6>Bot2 1</h6>
+        <button @click="show">show22</button>
+        <slot></slot>
+      </div>
+    `,
+    created () {
+      this.setChildrenRef('bot21', this)
+    },
+    methods: {
+      show () {
+        console.log(this.getChildrenRef('bot22'))
+      }
+    }
+  }
+
+  const ComponentBot22 = {
+    inject: ['setChildrenRef', 'getChildrenRef', 'getRef'],
+    template: `
+      <div>
+        <h6>Bot2 2</h6>
+        <button @click="show">show21</button>
+        <slot></slot>
+      </div>
+    `,
+    created () {
+      this.setChildrenRef('bot22', this)
+    },
+    methods: {
+      show () {
+        console.log(this.getChildrenRef('bot21'))
+      }
+    }
+  }
+
+  const ComponentMid1 = {
+    components: { ComponentBot11 },
+    template: `
+      <div>
+        <h3>mid1</h3>
+        <component-bot11 ref="bot11"></component-bot11>
+        <slot></slot>
+      </div>
+    `
+  }
+
+  const ComponentMid2 = {
+    components: { ComponentBot21, ComponentBot22 },
+    template: `
+      <div>
+        <h3>mid2</h3>
+        <component-bot21 ref="bot21"></component-bot21>
+        <component-bot22 ref="bot22"></component-bot22>
+        <slot></slot>
+      </div>
+    `
+  }
+
+  const ComponentTop = {
+    components: {
+      ComponentMid1,
+      ComponentMid2
+    },
+    provide () {
+      return {
+        topGetMap: this.getMap
+      }
+    },
+    methods: {
+      getMap () {
+        console.log('Top Map')
+        alert('Top getmap')
+      }
+    },
+    template: `
+      <div>
+        <h1>Top</h1>
+        <component-mid1 ref="mid1"></component-mid1>
+        <component-mid2 ref="mid2"></component-mid2>
+        <slot></slot>
+      </div>
+    `
+  }
+
+  const vm = new Vue({
+    el: '#app',
+    components: { ComponentTop },
+    provide () {
+      return {
+        setChildrenRef: (name, ref) => {
+          this[name] = ref
+        },
+        getChildrenRef: name => this[name],
+        getRef: () => this
+      }
+    }
+  })
+</script>
+<script>
+</script>
 </body>
 </html>

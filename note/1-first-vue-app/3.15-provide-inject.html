@@ -10,16 +10,16 @@
       height: 100%;
     }
 
-    * {
-      margin: 0 auto;
+    h1, h2, h3, h4, h5, h6 {
+      padding: 20px;
+      border-bottom: 1px solid lightgray;
     }
   </style>
 </head>
 <body>
 <div id="app">
   <component-a>
-    <component-b>
-    </component-b>
+    <component-b></component-b>
     <component-c>
       <component-e></component-e>
       <component-f></component-f>
@@ -31,104 +31,6 @@
     </component-d>
   </component-a>
 </div>
-
-<script>
-  const ComponentA = {
-    provide () {
-      return {
-        theme: this.theme
-      }
-    },
-    data () {
-      return {
-        theme: {
-          color: 'green'
-        }
-      }
-    },
-    template: `
-      <div>
-        <h1 :style="{ color: theme.color }">A</h1>
-        <button @click="changeColor">A变色</button>
-        <slot></slot>
-      </div>
-    `,
-    methods: {
-      changeColor (color) {
-        this.theme.color = this.theme.color === 'red' ? 'green' : 'red'
-      }
-    }
-  }
-
-  const ComponentB = {
-    inject: ['theme'],
-    template: `
-      <div>
-        <h2 :style="{ color: theme.color }">B</h2>
-        <slot></slot>
-      </div>
-    `,
-    created () {
-      console.log(this)
-    }
-  }
-
-  const ComponentC = {
-    inject: ['theme'],
-    template: `
-      <div>
-        <h2 :style="{ color: theme.color }">C</h2>
-        <slot></slot>
-      </div>
-    `
-  }
-
-  const ComponentD = {
-    inject: ['theme'],
-    template: `
-      <div>
-        <h2 :style="{ color: theme.color }">D</h2>
-        <button @click="changeColor">changeColorD</button>
-        <slot></slot>
-      </div>
-    `,
-    methods: {
-      changeColor () {
-        this.theme.color = this.theme.color === 'red' ? 'green' : 'red'
-      }
-    }
-  }
-
-  function tplElement (level, innerHTML) {
-    return {
-      inject: ['theme'],
-      render (h) {
-        return h(`h${level}`, { style: { color: this.theme.color } }, innerHTML)
-      }
-    }
-  }
-
-
-  const vm = new Vue({
-    el: '#app',
-    provide () {
-      return {
-        theme: this.theme
-      }
-    },
-    components: {
-      ComponentA,
-      ComponentB,
-      ComponentC,
-      ComponentD,
-      ComponentE: tplElement(3, 'E'),
-      ComponentF: tplElement(3, 'F'),
-      ComponentG: tplElement(3, 'G'),
-      ComponentH: tplElement(3, 'H'),
-      ComponentI: tplElement(3, 'I')
-    }
-  })
-
-</script>
+<script type="module" src="3.15-provide-inject.js"></script>
 </body>
 </html>
